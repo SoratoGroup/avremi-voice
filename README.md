@@ -4,48 +4,82 @@ Avremi is the first open-source neural text-to-speech voice for Yiddish. It prod
 
 **Try it live:** [loqal.digital/yiddish-tts](https://loqal.digital/yiddish-tts)
 
-## Quick Start
+## Try It Now (No Install)
 
-Avremi is a [Piper](https://github.com/rhasspy/piper) VITS model. It takes **romanized Latin text** (not Hebrew script) and uses espeak-ng's German phonemizer internally. Three steps to hear it speak:
+The fastest way to hear Avremi: **[loqal.digital/yiddish-tts](https://loqal.digital/yiddish-tts)** — type any Yiddish text in the browser and press Listen.
 
-### 1. Install
+## Run It Yourself
+
+Want to run it on your own machine? Here's everything you need.
+
+### Prerequisites
+
+- **Python 3.9+**
+- **espeak-ng** — the open-source speech synthesizer ([install guide](https://github.com/espeak-ng/espeak-ng/blob/master/docs/guide.md))
+  - macOS: `brew install espeak-ng`
+  - Ubuntu/Debian: `sudo apt install espeak-ng`
+  - Windows: download from [espeak-ng releases](https://github.com/espeak-ng/espeak-ng/releases)
+
+### Setup (one time)
 
 ```bash
+# Clone this repo
+git clone https://github.com/SoratoGroup/avremi-voice.git
+cd avremi-voice
+
+# Install Python dependencies
 pip install piper-tts yiddish
 ```
 
-You also need [espeak-ng](https://github.com/espeak-ng/espeak-ng) installed on your system.
+### Speak Yiddish
 
-### 2. Download
-
-Download `avremi.onnx` and `avremi.onnx.json` from this repo (or clone it).
-
-### 3. Synthesize
+Create a file called `speak.py`:
 
 ```python
+import wave
 import yiddish
-from espeak_respell import respell_for_espeak  # included in this repo
+from espeak_respell import respell_for_espeak
 from piper import PiperVoice
 
-# Load the voice
 voice = PiperVoice.load("avremi.onnx")
 
-# Yiddish text → romanized → respelled for German espeak
-text = "שלום עליכם, ווי גייט עס אײַך?"
-romanized = yiddish.transliterate(text)    # → "sholem aleykhem, vi geyt es aykh?"
-respelled = respell_for_espeak(romanized)  # → "scholem alejkhem, wi gejt es ajkh?"
+def speak(text, filename="output.wav"):
+    """Convert Yiddish text to speech."""
+    romanized = yiddish.transliterate(text)
+    respelled = respell_for_espeak(romanized)
+    with wave.open(filename, "wb") as wav:
+        voice.synthesize_wav(respelled, wav)
+    print(f"Saved to {filename}")
 
-# Speak!
-import wave
-with wave.open("output.wav", "wb") as wav:
-    voice.synthesize_wav(respelled, wav)
+# Try it!
+speak("שלום עליכם, ווי גייט עס אײַך?")
+speak("מײַן נאָמען איז אַבֿרמי.", "avremi.wav")
+speak("ייִדיש איז אַ שפּראַך פֿון טויזנט יאָר.", "thousand.wav")
 ```
 
-That's it. The output is a WAV file you can play with any audio player.
+```bash
+python speak.py
+# → Saved to output.wav
+# → Saved to avremi.wav
+# → Saved to thousand.wav
 
-> **Why the extra steps?** Piper uses espeak-ng to convert text to phonemes, but espeak's German mode misreads YIVO romanization (e.g., "z" becomes [ts] instead of [z], "sh" gets garbled). The `respell_for_espeak()` function rewrites the romanization so German espeak produces the correct Yiddish sounds. See [Espeak Respelling](#espeak-respelling) for the full mapping.
+# Play it (macOS)
+afplay output.wav
+```
 
-**Requirements:** CPU only — no GPU needed. Runs on desktop, mobile, Raspberry Pi, and embedded devices. Also works with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) for mobile/embedded use.
+That's it — three lines of code to go from Yiddish text to audio.
+
+### Why the Preprocessing?
+
+Avremi uses [Piper](https://github.com/rhasspy/piper), which internally uses espeak-ng's **German** phonemizer to convert text to phonemes. But German espeak misreads YIVO Yiddish romanization — for example, it turns "z" into [ts], mangles "sh", and reads "vi" as the Roman numeral VI.
+
+The `espeak_respell.py` file (included in this repo) fixes this by rewriting the romanization into spellings that German espeak interprets correctly. See [Espeak Respelling](#espeak-respelling) below for the complete mapping.
+
+The [`yiddish`](https://pypi.org/project/yiddish/) Python library handles the Hebrew-to-Latin transliteration.
+
+### For Mobile & Embedded
+
+Avremi also works with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) for iOS, Android, Raspberry Pi, and other embedded platforms. CPU only — no GPU needed. The model is ~63 MB.
 
 ## Model Files
 
