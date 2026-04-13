@@ -6,17 +6,46 @@ Avremi is the first open-source neural text-to-speech voice for Yiddish. It prod
 
 ## Quick Start
 
-Avremi is a Piper VITS model distributed as an ONNX file. It works with [Piper](https://github.com/rhasspy/piper), [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), and any VITS-compatible runtime.
+Avremi is a [Piper](https://github.com/rhasspy/piper) VITS model. It takes **romanized Latin text** (not Hebrew script) and uses espeak-ng's German phonemizer internally. Three steps to hear it speak:
+
+### 1. Install
 
 ```bash
-# Install Piper
-pip install piper-tts
-
-# Synthesize
-echo "שלום עליכם, ווי גייט עס?" | piper --model avremi.onnx --output_file output.wav
+pip install piper-tts yiddish
 ```
 
-**Requirements:** CPU only — no GPU needed. Runs on desktop, mobile, Raspberry Pi, and embedded devices.
+You also need [espeak-ng](https://github.com/espeak-ng/espeak-ng) installed on your system.
+
+### 2. Download
+
+Download `avremi.onnx` and `avremi.onnx.json` from this repo (or clone it).
+
+### 3. Synthesize
+
+```python
+import yiddish
+from espeak_respell import respell_for_espeak  # included in this repo
+from piper import PiperVoice
+
+# Load the voice
+voice = PiperVoice.load("avremi.onnx")
+
+# Yiddish text → romanized → respelled for German espeak
+text = "שלום עליכם, ווי גייט עס אײַך?"
+romanized = yiddish.transliterate(text)    # → "sholem aleykhem, vi geyt es aykh?"
+respelled = respell_for_espeak(romanized)  # → "scholem alejkhem, wi gejt es ajkh?"
+
+# Speak!
+import wave
+with wave.open("output.wav", "wb") as wav:
+    voice.synthesize_wav(respelled, wav)
+```
+
+That's it. The output is a WAV file you can play with any audio player.
+
+> **Why the extra steps?** Piper uses espeak-ng to convert text to phonemes, but espeak's German mode misreads YIVO romanization (e.g., "z" becomes [ts] instead of [z], "sh" gets garbled). The `respell_for_espeak()` function rewrites the romanization so German espeak produces the correct Yiddish sounds. See [Espeak Respelling](#espeak-respelling) for the full mapping.
+
+**Requirements:** CPU only — no GPU needed. Runs on desktop, mobile, Raspberry Pi, and embedded devices. Also works with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) for mobile/embedded use.
 
 ## Model Files
 
@@ -24,8 +53,7 @@ echo "שלום עליכם, ווי גייט עס?" | piper --model avremi.onnx --
 |------|-------------|
 | `avremi.onnx` | Piper VITS model (~63 MB) |
 | `avremi.onnx.json` | Model configuration (sample rate, phoneme map) |
-
-The model uses the **German espeak-ng phonemizer** (`-v de`). Input text must be romanized and respelled for German espeak compatibility (see Preprocessing below).
+| `espeak_respell.py` | Romanization → German-espeak-friendly spelling (required) |
 
 ## Preprocessing Pipeline
 
