@@ -171,7 +171,6 @@ Today, Yiddish remains a living first language for hundreds of thousands of Hasi
 
 - **REYD** — Yiddish speech corpus (University of Edinburgh / University of Regensburg)
 - **Piper** — Neural text-to-speech engine (Rhasspy project)
-- **OpenVoice** — Voice tone color conversion (MyShell AI)
 - **yiddish** — Yiddish transliteration library (Jochanan Stenzel)
 
 ## Links
