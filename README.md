@@ -164,7 +164,8 @@ Today, Yiddish remains a living first language for hundreds of thousands of Hasi
 
 ## License
 
-The Avremi voice model is released under **CC BY-SA 4.0**, consistent with the REYD corpus license.
+- **Model files** (ONNX, config): **CC BY-SA 4.0** — consistent with the REYD corpus license
+- **Code** (Python, Swift, Kotlin): **MIT** — use freely in any project
 
 ## Attribution
 
