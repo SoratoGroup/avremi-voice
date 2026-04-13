@@ -147,7 +147,7 @@ Overrides bypass all preprocessing and are inserted directly into the phoneme st
 
 ## About the Training Data
 
-Avremi is trained on the [REYD corpus](https://datashare.ed.ac.uk/handle/10283/8760) — a dataset of studio-quality Yiddish recordings produced at the University of Edinburgh and the University of Regensburg. The dataset contains 4,892 utterances (~475 minutes) from 3 native speakers reading late 19th and early 20th century Yiddish fiction.
+Avremi is trained on the [REYD corpus](https://datashare.ed.ac.uk/handle/10283/4383) — a dataset of studio-quality Yiddish recordings produced at the University of Edinburgh and the University of Regensburg. The dataset contains 4,892 utterances (~475 minutes) from 3 native speakers reading late 19th and early 20th century Yiddish fiction.
 
 Avremi's voice is based on recordings in the **Polish (Poylish) dialect** — the most widely spoken Yiddish dialect before World War II, characteristic of central Poland (Warsaw, Lodz, Krakow).
 
@@ -178,6 +178,6 @@ Today, Yiddish remains a living first language for hundreds of thousands of Hasi
 
 - [Try Avremi live](https://loqal.digital/yiddish-tts)
 - [Loqal — AI Language Learning App](https://loqal.digital) (iOS & Android)
-- [REYD Corpus](https://datashare.ed.ac.uk/handle/10283/8760)
+- [REYD Corpus](https://datashare.ed.ac.uk/handle/10283/4383)
 - [Piper TTS](https://github.com/rhasspy/piper)
 - [YIVO Institute](https://www.yivo.org)
